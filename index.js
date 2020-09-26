@@ -23,11 +23,12 @@ class Room {
 }
 
 class Thing {
-    constructor(name, description, takeable, location) {
+    constructor(name, description, takeable, location, message) {
         this.name = name
         this.description = description
         this.takeable = takeable
         this.location = location
+        this.message = message
     }
 
     describe() {
@@ -36,10 +37,11 @@ class Thing {
 }
 
 class Player {
-    constructor(description, inventory, state) {
+    constructor(description, inventory, location, literate) {
         this.description = description
         this.inventory = inventory
-        this.state = state
+        this.location = location
+        this.literate = literate
     }
 
     describe() {
@@ -49,8 +51,15 @@ class Player {
 
 /********* Objects ***************************************************** */
 
+let user = new Player(
+    'A scruffy looking coding instructor.',
+    [],
+    'street',
+    false     // player starts game unable to read the map
+)
+
 //  Rooms ***************
-let Street = new Room(             //(our sentence describing the street, [our array of inventory])
+let Street = new Room(    //(our sentence describing the street, [our array of inventory])
     "street",
     "You notice a wallet, rocks, sticks, a toy boat, and a partially torn newspaper lying about",
     ['toyBoat', 'wallet']
@@ -82,53 +91,60 @@ let Cave = new Room(
 
 // Things *****************
 
-let ToyBoat = new Thing(
-    'toyBoat',
+let toyBoat = new Thing(
+    'toyboat',
     "A toy sailboat with a blue hull. It is very detailed with a nautical wheel and a place for a captain, a mast, and a boom.  On the side of the bow are registration numbers BH-1138",
     true,
-    Street
+    Street,
+    'message'
 )
 
 let wallet = new Thing(
     'wallet',
     "A crocodile-leather wallet that is battered, scuffed, and worn",
     false,
-    Street
+    Street,
+    'Trying to take something that isn\'t yours?'
 )
 
 let fishBucket = new Thing(
-    'bucket of fish',
+    'fishbucket',
     "description",
     true,
-    Deck
+    Deck,
+    'message'
 )
 
-let bookMap = new Thing(
-    'Maps for Dummies',
+let mapBook = new Thing(
+    'mapbook',
     "description",
     true,
-    Cabin
+    Cabin,
+    'message'
 )
 
 let seaCaptain = new Thing(
-    'sea captain figurine',
+    'seacaptain',
     "description",
     true,
-    Cave
+    Cave,
+    'message'
 )
 
 let bottle = new Thing(
-    'bottle with map',
+    'bottle',
     "description",
     true,
-    Island
+    Island,
+    'message'
 )
 
 let map = new Thing(
     'map',
     "description",
     false,
-    Island
+    Island,
+    'message'
 )
 
 // // ****door******
@@ -174,21 +190,49 @@ function sanitizeInput(stringIn) {
     let cleanArray = cleanString.split(' ')
     let action = cleanArray.shift() // action being verb
     let target = cleanArray.pop() // target being noun
-
     let exportArray = [action, target]
+    console.log(exportArray)
     return exportArray
     // console.log('exportArray is ' + exportArray + ' ' + typeof(exportArray))
 }
 
-function checkTarget(action, target) {  // check the noun's status
-    let availableTarget = ['wallet', 'toy boat', 'map', 'bottle with map', '']
-
-    if (availableTarget.includes(target)) {
-        if (target === 'wallet') {
-
-        }
+function takeable(item) {
+    console.log('takeable function fired')
+    if (item.takeable === true) {
+        Player.inventory.push(item)
+        Player.location.inventory.pop(item)
+        console.log(Player.inventory)
+        console.log(Player.location.inventory)
+    } else {
+        console.log(item.message)
     }
 }
+
+function checkTarget(action, target) {  // check the noun's status
+
+    let availableTarget = ['wallet', 'toyboat', 'map', 'bottle', 'mapbook', 'seacaptain', 'fishbucket']
+
+    if (availableTarget.includes(target)) {
+        takeable(lookUp[target])
+    } 
+    
+}
+
+// ******************* lookup table
+let lookUp = {
+    'wallet': wallet,
+    'fishbucket': fishBucket,
+    'seacaptain': seaCaptain,
+    'mapbook': mapBook,
+    'bottle': bottle,
+    'map': map,
+    'toyboat': toyBoat
+}
+
+// inventory subroutine
+
+// takeable function-- if true, add to inventory. if falsy print message
+
 
 // *************** logic ********************
 
@@ -199,19 +243,19 @@ async function start() {
         let firstQ = await ask('What would you like to do?\n>_') // ask opening question
         // break firstQ into an array and compare.. a separate function? SANITIZE!
         let commandArray = sanitizeInput(firstQ)
+        console.log(commandArray)
+        console.log('commandArray is ', commandArray, typeof (commandArray))
 
-        console.log('commandArray is ' + commandArray + ' ' + typeof (commandArray))
-
-        if (commandArray[0] === 'go left') {
-            console.log('see description of what is to left - blocked street')
-        } else if (commandArray[0] === 'go right') {
-            console.log('see description of what is to right - blocked street')
+        if (commandArray[0] === 'go') {
+            checkTarget(commandArray[0], commandArray[1])
         } else if (commandArray[0] === 'look') {
-            console.log('look')
+            checkTarget(commandArray[0], commandArray[1])
         } else if (commandArray[0] === 'i') {
-            console.log('i')
+            checkTarget(commandArray[0], commandArray[1])
         } else if (commandArray[0] === 'r') {
-            console.log('r')
+            checkTarget(commandArray[0], commandArray[1])
+        } else if (commandArray[0] === 'take') {
+            checkTarget(commandArray[0], commandArray[1])
         } else {
             console.log('Please enter a valid command.')
         }
