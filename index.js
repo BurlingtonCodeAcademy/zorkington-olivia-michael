@@ -47,7 +47,7 @@ class Player {
     }
 }
 
-/********* Objects ***************************************************************** */
+/********* Objects ***************************************************** */
 
 //  Rooms ***************
 let Street = new Room(             //(our sentence describing the street, [our array of inventory])
@@ -59,25 +59,25 @@ let Street = new Room(             //(our sentence describing the street, [our a
 let Deck = new Room(
     'Deck',
     'A weathered deck. You notice a cabin door at the fore, a bucket of fish at the aft, and water all around. An island is off in the near distance.',
-    []
+    ['fishBucket', 'cabin door', 'keypad']
 )
 
 let Island = new Room(
     'Island',
     'A sandy beach that stretches to the east and west. Palm trees bend in the breeze.',
-    []
+    ['bottle', 'map']
 )
 
 let Cabin = new Room(
     'Cabin',
     'A small room filled with odd items. You see a radio and books.',
-    []
+    ['Maps for Dummies']
 )
 
 let Cave = new Room(
     'cave',
     'A dark entrance lies before you. You see a glint of light inside.',
-    []
+    ['sea captain figurine']
 )
 
 // Things *****************
@@ -96,6 +96,55 @@ let wallet = new Thing(
     Street
 )
 
+let fishBucket = new Thing(
+    'bucket of fish',
+    "description",
+    true,
+    Deck
+)
+
+let bookMap = new Thing(
+    'Maps for Dummies',
+    "description",
+    true,
+    Cabin
+)
+
+let seaCaptain = new Thing(
+    'sea captain figurine',
+    "description",
+    true,
+    Cave
+)
+
+let bottle = new Thing(
+    'bottle with map',
+    "description",
+    true,
+    Island
+)
+
+let map = new Thing(
+    'map',
+    "description",
+    false,
+    Island
+)
+
+// // ****door******
+// let cabinDoor = new Thing(
+//     'cabin door',
+//     "description",
+//     false,
+//     Deck
+// )
+
+// let keypad = new Thing(
+//     'keypad',
+//     "description",
+//     true,
+//     Deck
+// )
 
 
 /**   Global Functions  **************** */
@@ -131,15 +180,15 @@ function sanitizeInput(stringIn) {
     // console.log('exportArray is ' + exportArray + ' ' + typeof(exportArray))
 }
 
-// function checkTarget(action, target) {  // check the noun's status
-//     let availableTarget = ['wallet', 'toy boat',]
+function checkTarget(action, target) {  // check the noun's status
+    let availableTarget = ['wallet', 'toy boat', 'map', 'bottle with map', '']
 
-//     if (availableTarget.includes(target)) {
-//         if (target === 'wallet') {
+    if (availableTarget.includes(target)) {
+        if (target === 'wallet') {
 
-//         }
-//     }
-// }
+        }
+    }
+}
 
 // *************** logic ********************
 
