@@ -41,17 +41,22 @@ class Thing {
     }
 
     take() {
-        if (this.takeable === true /*&& lookUpRooms[Player.location].inventory.includes(this.name)*/) {
+        if (this.takeable === true) {
             Player.inventory.push(this.name)
             console.log(`You now have the ${this.name}.`)
             console.log('You are in', Player.location, 'and have', Player.inventory)
             let startIndex = (lookUpRooms[Player.location].inventory).indexOf(this.name)
-            console.log('this is the start index', startIndex)
             lookUpRooms[Player.location].inventory.splice(startIndex, 1)
             console.log('location Inventory is now', lookUpRooms[Player.location].inventory)
         } else {
             console.log(this.message)
         }
+    }
+
+    drop() {
+        lookUpRooms[Player.location].inventory.push(this.name)
+        let startIndex = (Player.inventory).indexOf(this.name)
+        Player.inventory.splice(startIndex, 1)
     }
 }
 
@@ -226,12 +231,17 @@ function takeable(item) {
 }
 
 function checkTarget(action, target) {  // check the noun's status
-    let availableTarget = lookUpRooms[Player.location].inventory
-    console.log('available targets are', availableTarget)
-    if (availableTarget.includes(target)) {
-        lookUpThings[target].take() // using lookuptable to access actual thing
-    } else {
-        console.log('You already have', target)
+    if (action === 'take') {
+        let availableTarget = lookUpRooms[Player.location].inventory
+        console.log('available targets are', availableTarget)
+        if (availableTarget.includes(target)) {
+            lookUpThings[target].take() // using lookuptable to access actual thing
+        } else {
+            console.log('You already have', target)
+        }
+    }
+    if (action === 'drop') {
+        lookUpThings[target].drop()
     }
 }
 
@@ -269,6 +279,12 @@ async function start() {
 
         if (commandArray[0] === 'take') {
             checkTarget(commandArray[0], commandArray[1])
+        } else if (commandArray[0] === 'drop') {
+            checkTarget(commandArray[0], commandArray[1])
+
+
+
+
         } else if (commandArray[0] === 'go') {
             checkTarget(commandArray[0], commandArray[1])
         } else if (commandArray[0] === 'look') {
