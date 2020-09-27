@@ -1,16 +1,18 @@
-let locationState = {
-    street: ['deck'],
-    deck: ['street', 'cabin'],
-    cabin: ['island', 'street'],
-    island: ['deck']
+let localeState = {
+    street: ['sailboat'],
+    sailboat: ['street', 'cabin', 'island'],
+    cabin: ['sailboat'],
+    island: ['cave','sailboat'],
+    cave: ['island']
 }
 
-function move(nextState) {
-    let currentState = light
-
-    if (locationState[currentState].includes(nextState)) {
-        Player.location = nextState
+function move(nextLocale) {
+  
+    if (locationLocale[currentLocale].includes(nextLocale)) {
+        Player.location = nextLocale
     } else {
-        console.log(`invalid transition: ${currentState} to ${nextState} `)
+        console.log(`invalid transition: ${currentLocale} to ${nextLocale} `)
     }
 }
+
+c
