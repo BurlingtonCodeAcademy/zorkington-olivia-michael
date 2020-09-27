@@ -57,6 +57,7 @@ class Thing {
         lookUpRooms[Player.location].inventory.push(this.name)
         let startIndex = (Player.inventory).indexOf(this.name)
         Player.inventory.splice(startIndex, 1)
+        console.log(`You just left the ${this.name} in the ${Player.location}.`)
     }
 }
 
@@ -76,14 +77,14 @@ let Player = {
 let Street = new Room(    //(our sentence describing the street, [our array of inventory])
     "street",
     "You notice a wallet, rocks, sticks, a toy boat, and a partially torn newspaper lying about",
-    ['toyboat', 'wallet'],
+    ['boat', 'wallet'],
     true
 )
 
 let Deck = new Room(
     'Deck',
     'A weathered deck. You notice a cabin door at the fore, a bucket of fish at the aft, and water all around. An island is off in the near distance.',
-    ['fishBucket', 'cabin door', 'keypad'],
+    ['bucket', 'cabin door', 'keypad'],
     true
 )
 
@@ -97,21 +98,21 @@ let Island = new Room(
 let Cabin = new Room(
     'Cabin',
     'A small room filled with odd items. You see a radio and books.',
-    ['Maps for Dummies'],
+    ['book'],
     false
 )
 
 let Cave = new Room(
     'cave',
     'A dark entrance lies before you. You see a glint of light inside.',
-    ['sea captain figurine'],
+    ['captain'],
     true
 )
 
 // Things *****************
 
 let toyBoat = new Thing(
-    'toyboat',
+    'boat',
     "A toy sailboat with a blue hull. It is very detailed with a nautical wheel and a place for a captain, a mast, and a boom.  On the side of the bow are registration numbers BH-1138",
     true,
     Street,
@@ -203,7 +204,6 @@ function commandList() {
     `)
 }
 
-
 function sanitizeInput(stringIn) {
     let cleanString = stringIn.trim().toLowerCase()
     let cleanArray = cleanString.split(' ')
@@ -214,99 +214,101 @@ function sanitizeInput(stringIn) {
     // console.log('exportArray is ' + exportArray + ' ' + typeof(exportArray))
 }
 
-function takeable(item) {
-    // if item is takeable  - add to player inventory - delete from room inventory
-    console.log('takeable function fired')
-    if (item.takeable === true) {
-        Player.inventory.push(item.name)
-        console.log(Player.inventory)
+// function takeable(item) {
+//     // if item is takeable  - add to player inventory - delete from room inventory
+//     console.log('takeable function fired')
+//     if (item.takeable === true) {
+//         Player.inventory.push(item.name)
+//         console.log(Player.inventory)
+//         if (Room.inventory.includes(item)) 
+//         }
+//         console.log(Player.location)
+//     } else {
+//         console.log(item.message)
+//     }
 
-        if (Room.inventory.includes(item)) {
-
-        }
-        console.log(Player.location)
-    } else {
-        console.log(item.message)
-    }
-}
 
 function checkTarget(action, target) {  // check the noun's status
     if (action === 'take') {
         let availableTarget = lookUpRooms[Player.location].inventory
         console.log('available targets are', availableTarget)
+        console.log(Player.inventory)
         if (availableTarget.includes(target)) {
             lookUpThings[target].take() // using lookuptable to access actual thing
         } else {
             console.log('You already have', target)
         }
-    }
-    if (action === 'drop') {
-        lookUpThings[target].drop()
-    }
-}
-
-// ******************* lookup table
-let lookUpThings = {
-    'wallet': wallet,
-    'fishbucket': fishBucket,
-    'seacaptain': seaCaptain,
-    'mapbook': mapBook,
-    'bottle': bottle,
-    'map': map,
-    'toyboat': toyBoat
-}
-
-let lookUpRooms = {
-    'street': Street,
-    'deck': Deck,
-    'island': Island,
-    'cabin': Cabin,
-    'cave': Cave
-}
-// inventory subroutine
-
-// takeable function-- if true, add to inventory. if falsy print message
-
-
-// *************** logic ********************
-
-
-async function start() {
-    while (true) {
-        let firstQ = await ask('What would you like to do?\n>_') // ask opening question
-        // break firstQ into an array and compare.. a separate function? SANITIZE!
-        let commandArray = sanitizeInput(firstQ)
-
-        if (commandArray[0] === 'take') {
-            checkTarget(commandArray[0], commandArray[1])
-        } else if (commandArray[0] === 'drop') {
-            checkTarget(commandArray[0], commandArray[1])
-
-
-
-
-        } else if (commandArray[0] === 'go') {
-            checkTarget(commandArray[0], commandArray[1])
-        } else if (commandArray[0] === 'look') {
-            checkTarget(commandArray[0], commandArray[1])
-        } else if (commandArray[0] === 'i') {
-            checkTarget(commandArray[0], commandArray[1])
-        } else if (commandArray[0] === 'r') {
-            checkTarget(commandArray[0], commandArray[1])
+    } else if (action === 'drop') {
+        if (Player.inventory.includes(target)) {
+            console.log('246 - target =', target, 'player has', Player.inventory)
+            lookUpThings[target].drop()
         } else {
-            console.log('Please enter a valid command.')
-        }
+            console.log(`You don't have the ${target}.`)
+        } // else if {}
     }
-    process.exit()
 }
 
+    // ******************* lookup table
+    let lookUpThings = {
+        'wallet': wallet,
+        'bucket': fishBucket,
+        'captain': seaCaptain,
+        'book': mapBook,
+        'bottle': bottle,
+        'map': map,
+        'boat': toyBoat
 
-// ******************* flow **************************
+    }
 
-console.log('Welcome to our game!')
-// let Player.name = await ask("What is your name?")
-console.log('You are on deserted city street with no one around.')
-commandList()
-start();
 
-//
+    let lookUpRooms = {
+        'street': Street,
+        'deck': Deck,
+        'island': Island,
+        'cabin': Cabin,
+        'cave': Cave
+    }
+    // inventory subroutine
+
+    // takeable function-- if true, add to inventory. if falsy print message
+
+
+    // *************** logic ********************
+
+
+    async function start() {
+        while (true) {
+            let firstQ = await ask('What would you like to do?\n>_') // ask opening question
+            // break firstQ into an array and compare.. a separate function? SANITIZE!
+            let commandArray = sanitizeInput(firstQ)
+
+            if (commandArray[0] === 'take') {
+                checkTarget(commandArray[0], commandArray[1])
+            } else if (commandArray[0] === 'drop') {
+                checkTarget(commandArray[0], commandArray[1])
+            } else if (commandArray[0] === 'go') {
+                checkTarget(commandArray[0], commandArray[1])
+
+
+
+            } else if (commandArray[0] === 'look') {
+                checkTarget(commandArray[0], commandArray[1])
+            } else if (commandArray[0] === 'i') {
+                checkTarget(commandArray[0], commandArray[1])
+            } else if (commandArray[0] === 'r') {
+                checkTarget(commandArray[0], commandArray[1])
+            } else {
+                console.log('Please enter a valid command.')
+            }
+        }
+        process.exit()
+    }
+
+
+    // ******************* flow **************************
+
+    console.log('Welcome to our game!')
+    // let Player.name = await ask("What is your name?")
+    console.log('You are on deserted city street with no one around.')
+    commandList()
+    start();
