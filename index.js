@@ -11,20 +11,16 @@ function ask(questionText) {
 /******* Class Constructors************************************************************ */
 
 class Room {
-    constructor(name, description, inventory, locked) {
+    constructor(name, description, inventory, locked, message) {
         this.name = name
         this.description = description
         this.inventory = inventory
         this.locked = locked
+        this.message = message
     }
-
-    drop() { }
-
     look() {
         console.log(this.description)
     }
-
-    go() { }
 }
 
 class Thing {
@@ -44,10 +40,8 @@ class Thing {
         if (this.takeable === true) {
             Player.inventory.push(this.name)
             console.log(`You now have the ${this.name}.`)
-            //  console.log('You are in', Player.location, 'and have', Player.inventory)
             let startIndex = (lookUpRooms[Player.location].inventory).indexOf(this.name)
             lookUpRooms[Player.location].inventory.splice(startIndex, 1)
-            // console.log('location Inventory is now', lookUpRooms[Player.location].inventory)
         } else {
             console.log(this.message)
         }
@@ -58,14 +52,13 @@ class Thing {
         let startIndex = (Player.inventory).indexOf(this.name)
         Player.inventory.splice(startIndex, 1)
         console.log(`You just left the ${this.name} in the ${Player.location}.`)
-        console.log(lookUpRooms[Player.location].inventory)
     }
 }
 
-/* Global Variables ***************************************************/
-// let currentLocale = 'street'
+/* Global Variables ***************************************************************************/
 
-/********* Objects ***************************************************** */
+
+/********* Objects ************************************************************************** */
 
 let Player = {
     name: 'Bob',
@@ -75,44 +68,49 @@ let Player = {
     literate: false,
 }
 
-//  Rooms ***************
+//  Rooms ****************************************************************************************
 
 let Street = new Room(    //(our sentence describing the street, [our array of inventory])
     "street",
     "You are on a city street, as you look around you notice a wallet in the middle of the sidewalk, and a toy boat near the curb.",
     ['boat', 'wallet'],
-    true
+    true,
+    'message'
 )
 
 let Sailboat = new Room(
     'sailboat',
-    'You are on the deck of a weathered sailboat. You notice a cabin door, a battered metal bucket on the port side, and water all around. An island is off in the near distance.',
+    'You are on the deck of a weathered sailboat. You notice a cabin door, a battered metal bucket on the port side. An island is off in the near distance.',
     ['bucket', 'door', 'keypad'],
-    true
+    true,
+    'message'
 )
 
 let Island = new Room(
     'island',
     'You dive overboard and swim to the island.  You arrive on a sandy beach that stretches to the east and west. Palm trees bend in the breeze. To the east is a jumbled pile of rocks. You notice something sparkling in the rocks.  To the west the beach appears to end against an impenetrable cliff',
-    ['bottle', 'map'],
-    true
+    ['bottle', 'map', 'rocks'],
+    true,
+    'You exit the cave onto the sandy beach. Palm trees bend in the breeze. The sailboat remains anchored in the distance.'
 )
 
 let Cabin = new Room(
     'cabin',
     'You are in a small room.  On a side table you see a radio and a book.',
     ['book', 'radio'],
-    false
+    false,
+    'message'
 )
 
 let Cave = new Room(
     'cave',
-    'You enter adark cave.  A shaft of light from an opening above illuminates a craven Tiki-style altar.  In the center of the altar, centered on a great seashell, is a figurine of a sea captain.',
+    'You enter a dark cave.  A shaft of light from an opening above illuminates a craven Tiki-style altar.  In the center of the altar, centered on a great seashell, is a figurine of a sea captain.',
     ['captain'],
-    true
+    true,
+    'message'
 )
 
-// Things *****************
+// Things *********************************************************************************************
 
 let toyBoat = new Thing(
     'boat',
@@ -140,7 +138,7 @@ let fishBucket = new Thing(
 
 let mapBook = new Thing(
     'book',
-    "Maps for Dummies. Reading this could come in handy.",
+    "Treasure Maps for Dummies. Reading this could come in handy.",
     true,
     Cabin,
     'message'
@@ -165,9 +163,9 @@ let bottle = new Thing(
 let map = new Thing(
     'map',
     "A parchment map that is covered in strange glyphs and symbols.",
-    false,
+    true,
     Island,
-    'You now can understand the symbols and see that there is a secret cave at the west end of the beach'
+    'You now can understand the symbols and follow the map to a secret cave at the west end of the beach.'
 )
 
 let rocks = new Thing(
@@ -202,7 +200,8 @@ let radio = new Thing(
     'You can\'t take this!'
 )
 
-/**   Global Functions  **************** */
+
+/**   Global Functions  ********************************************************************** */
 function showVars() {
     console.log('action is ' + action + ' ' + typeof (action))
     console.log('target is ' + target + ' ' + typeof (target))
@@ -214,6 +213,7 @@ function showVars() {
 function commandList() {
     console.log(`Please use the following commands:\n
     i - Check personal inventory
+    r - check location inventory
     List - display command list
     Look at - look at surroundings or items 
     Take - add item to inventory
@@ -227,58 +227,51 @@ function commandList() {
      `)
 }
 
-function sanitizeInput(stringIn) {
+function sanitizeInput(stringIn) {  // this function takes user input and sanitizes it 
     let cleanString = stringIn.trim().toLowerCase()
     let cleanArray = cleanString.split(' ')
     let action = cleanArray.shift() // action being verb
     let target = cleanArray.pop() // target being noun
     let exportArray = [action, target]
     return exportArray
-    // console.log('exportArray is ' + exportArray + ' ' + typeof(exportArray))
 }
 
-// function takeable(item) {
-//     // if item is takeable  - add to player inventory - delete from room inventory
-//     console.log('takeable function fired')
-//     if (item.takeable === true) {
-//         Player.inventory.push(item.name)
-//         console.log(Player.inventory)
-//         if (Room.inventory.includes(item)) 
-//         }
-//         console.log(Player.location)
-//     } else {
-//         console.log(item.message)
-//     }
 
-
-function checkTarget(action, target) {  // check the noun's status
+function checkTarget(action, target) {  //this function evaluates and executes user input
     if (action === 'take') {
-        console.log('your location is', lookUpRooms[Player.location].name, ' location inventory is ', lookUpRooms[Player.location].inventory)
-        console.log(Player.inventory)
         let availableTarget = lookUpRooms[Player.location].inventory
-        console.log('available targets are', availableTarget)
-        // console.log(Player.inventory)
-        if (availableTarget.includes(target)) {
-            lookUpThings[target].take() // using lookuptable to access actual thing
+        if (availableTarget.includes(target) && target != 'bottle') {
+            lookUpThings[target].take() // using lookuptable to access item
+        } else if (availableTarget.includes(target) && target === 'bottle') {
+            console.log(`You pick up the bottle and smash it on the rocks to get the map`)
+            lookUpThings['map'].take()
+            let startIndex = (lookUpRooms[Player.location].inventory).indexOf('bottle')
+            Player.inventory.splice(startIndex, 1)
+            lookUpRooms[Player.location].inventory.splice(startIndex, 1)
         } else {
             console.log('You already have', target)
         }
     } else if (action === 'drop') {
         if (Player.inventory.includes(target)) {
-            //console.log('246 - target =', target, 'player has', Player.inventory)
             lookUpThings[target].drop()
         } else {
             console.log(`You don't have the ${target}.`)
-        } // else if {}
-    } else if (action === 'look') {
-        if (Player.literate === true) {
-            console.log(map.message)
-        } else {
-            console.log(map.description)
         }
-        console.log(lookUpThings[target].description)
+    } else if (action === 'look') {
+        if (lookUpRooms[Player.location].inventory.includes(target) || Player.inventory) {
+            if (target === map) {
+                if (Player.literate === true) {
+                    console.log(map.message)
+                } else {
+                    console.log(map.description)
+                }
+            }
+            console.log(lookUpThings[target].description)
+        } else {
+            console.log(`There is no ${target} here.`)
+        }
     } else if (action === 'i') {
-        console.log(Player.inventory)
+        console.log('You are holding', Player.inventory)
     } else if (action === 'r') {
         console.log(lookUpRooms[Player.location].inventory)
     } else if (action === 'punch') {
@@ -296,41 +289,45 @@ function checkTarget(action, target) {  // check the noun's status
             } else {
                 console.log('The cabin door is locked, try the keypad...')
             }
-
-
         } else if (target === 'cave') {
-            if ([Player.inventory].includes(map)) {
-                if (map === true) {
-                    move('cave')
-                } else {
-                    console.log('You can\'t get there from here.')
-                }
-            }
+            move('cave')
+        } else {
+            console.log('You can\'t get there from here.')
         }
-    } else if (action === 'exit') {
+    }
+    else if (action === 'exit') {
         if (target === 'cabin') {
             move('sailboat')
         } else if (target === 'cave') {
             move('island')
+            console.log(Island.message)
         }
     } else if (action === 'swim') {
         if (target === 'island') {
             move('island')
         } else if (target === 'sailboat') {
             move('sailboat')
+            if (Player.inventory.includes('captain')) {
+                console.log('You fucking WIN!')
+                process.exit()
+            }
         }
     } else if (action === 'list') {
         commandList()
-
     } else if (action === 'read') {
         if (target === 'book') {
-            map = true
+            console.log('Your brain grows in size. You\'re a genius!')
+            Player.literate = true
+        } else if (target === 'map' && Player.literate === true) {
+            console.log(lookUpThings['map'].message)
+        } else {
+            console.log(lookUpThings['map'].description)
         }
     }
 }
 
 
-// ******************* lookup table
+// ******************* lookup table  **************************************************************
 let lookUpThings = {
     'wallet': wallet,
     'bucket': fishBucket,
@@ -352,12 +349,9 @@ let lookUpRooms = {
     'cabin': Cabin,
     'cave': Cave
 }
-// inventory subroutine
-
-// takeable function-- if true, add to inventory. if falsy print message
 
 
-// ******************* state machines *********************
+// ******************* state machines **************************************************************
 
 let localState = {
     street: ['sailboat'],
@@ -367,8 +361,7 @@ let localState = {
     cave: ['island']
 }
 
-function move(nextLocale) {
-
+function move(nextLocale) { // this function moves our Player from one room to another
     if (localState[Player.location].includes(nextLocale)) {
         Player.location = nextLocale
         console.log(lookUpRooms[Player.location].description)
@@ -378,21 +371,22 @@ function move(nextLocale) {
 }
 
 
-// *************** logic ********************
+// *************** logic **************************************************************************
 
 
 async function start() {
     while (true) {
         let firstQ = await ask('What would you like to do?\n>_') // ask opening question
-        // break firstQ into an array and compare.. a separate function? SANITIZE!
+
         let commandArray = sanitizeInput(firstQ)
+        //console.log(commandArray[0], commandArray[1])  /// remove this for production version
 
         if (commandArray[0] === 'take') {
             checkTarget(commandArray[0], commandArray[1])
             if (commandArray[1] === 'boat' && Player.location === 'street') {
                 console.log('Suddenly there is a flash of light!')
                 move('sailboat')
-                console.log('player location is now', Player.location)
+                console.log('Player location is now', Player.location)
             }
         } else if (commandArray[0] === 'drop') {
             checkTarget(commandArray[0], commandArray[1])
@@ -410,14 +404,10 @@ async function start() {
             checkTarget(commandArray[0], commandArray[1])
         } else if (commandArray[0], 'exit') {
             checkTarget(commandArray[0], commandArray[1])
-
-            // } else if { checkTarget(commandArray[0], commandArray[1]) {
-            // } else if (commandArray[0] === 'read') {
-            //     checkTarget(commandArray[0], commandArray[1])
-            // }
+        } else if (commandArray[0] === 'read') {
+            checkTarget(commandArray[0], commandArray[1])
         } else if (commandArray[0] === 'list') {
             checkTarget(commandArray[0], commandArray[1])
-
         } else {
             console.log('Please enter a valid command.')
         }
@@ -426,7 +416,7 @@ async function start() {
 }
 
 
-// ******************* flow **************************
+// ******************* flow ***************************************************************************
 
 
 console.log(lookUpRooms[Player.location].description)
