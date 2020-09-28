@@ -296,6 +296,8 @@ function checkTarget(action, target) {  // check the noun's status
             } else {
                 console.log('The cabin door is locked, try the keypad...')
             }
+
+
         } else if (target === 'cave') {
             if ([Player.inventory].includes(map)) {
                 if (map === true) {
@@ -304,29 +306,29 @@ function checkTarget(action, target) {  // check the noun's status
                     console.log('You can\'t get there from here.')
                 }
             }
-        } else if (action === 'exit') {
-            if (target === 'cabin') {
-                move('sailboat')
-            } else if (target === 'cave') {
-                move('island')
-            }
-        } else if (action === 'swim') {
-            if (target === 'island') {
-                move('island')
-            } else if (target === 'sailboat') {
-                move('sailboat')
-            }
-        } else if (action === 'list') {
-            commandList()
-
-        } else if (action === 'read') {
-            if (target === 'book') {
-                map = true
-            }
         }
+    } else if (action === 'exit') {
+        if (target === 'cabin') {
+            move('sailboat')
+        } else if (target === 'cave') {
+            move('island')
+        }
+    } else if (action === 'swim') {
+        if (target === 'island') {
+            move('island')
+        } else if (target === 'sailboat') {
+            move('sailboat')
+        }
+    } else if (action === 'list') {
+        commandList()
 
+    } else if (action === 'read') {
+        if (target === 'book') {
+            map = true
+        }
     }
 }
+
 
 // ******************* lookup table
 let lookUpThings = {
@@ -339,7 +341,8 @@ let lookUpThings = {
     'boat': toyBoat,
     'door': cabinDoor,
     'keypad': keypad,
-    'radio': radio
+    'radio': radio,
+    'rocks': rocks
 }
 
 let lookUpRooms = {
