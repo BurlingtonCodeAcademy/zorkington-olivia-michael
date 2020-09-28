@@ -1,4 +1,11 @@
-const { Console } = require('console');
+// Welcome to Zorkington-Olivia-Michael! 
+// This file includes all code for our text adventure.
+
+
+// Code below allows us to ask user for input later on in the code
+// and then wait for their response
+/******** Await Ask Requirements *************************************************** */
+const { Console } = require('console')
 const readline = require('readline');
 const readlineInterface = readline.createInterface(process.stdin, process.stdout);
 
@@ -8,6 +15,9 @@ function ask(questionText) {
     });
 }
 
+// Code below establishes our class constructors for Room and Thing objects
+// We'll use these to create individual rooms and objects that the Player can interact with and travel between
+// Which is made possible by the class properties and methods
 /******* Class Constructors************************************************************ */
 
 class Room {
@@ -55,9 +65,7 @@ class Thing {
     }
 }
 
-/* Global Variables ***************************************************************************/
-
-
+// Code below establishes our one literal object; the Player!
 /********* Objects ************************************************************************** */
 
 let Player = {
@@ -68,9 +76,10 @@ let Player = {
     literate: false,
 }
 
-//  Rooms ****************************************************************************************
+// Code below establishes different rooms and their properties, as defined by Class Constructor Room above
+/************ Rooms ************************************************************************************ */
 
-let Street = new Room(    //(our sentence describing the street, [our array of inventory])
+let Street = new Room(
     "street",
     "You are on a city street, as you look around you notice a wallet in the middle of the sidewalk, and a toy boat near the curb.",
     ['boat', 'wallet'],
@@ -110,7 +119,8 @@ let Cave = new Room(
     'message'
 )
 
-// Things *********************************************************************************************
+// Code below establishes different items and their properties, as defined by Class Constructor Thing above
+/************ Things *********************************************************************************************  */
 
 let toyBoat = new Thing(
     'boat',
@@ -200,9 +210,13 @@ let radio = new Thing(
     'You can\'t take this!'
 )
 
+// Code below creates the variable that is reassigned when the Player meets the win condition and beats the game!
+/* ************   Global Variable ************************************************************************* */
+let gameWon = false
 
-/**   Global Functions  ********************************************************************** */
-function showVars() {
+// Code below establishes all global functions, which we will access through various other functions, methods and loops
+/**************   Global Functions  ********************************************************************** */
+function showVars() {  // this is a function we used for debugging purposes. We liked it, and thought you might too!
     console.log('action is ' + action + ' ' + typeof (action))
     console.log('target is ' + target + ' ' + typeof (target))
     console.log('cleanString is ' + cleanString + ' ' + typeof (cleanString))
@@ -210,7 +224,7 @@ function showVars() {
     console.log('commandArray is ' + commandArray + ' ' + typeof (commandArray))
 }
 
-function commandList() {
+function commandList() {  // this function allows the user to recall the list of commands
     console.log(`Please use the following commands:\n
     i - Check personal inventory
     r - check location inventory
@@ -236,12 +250,12 @@ function sanitizeInput(stringIn) {  // this function takes user input and saniti
     return exportArray
 }
 
-
-function checkTarget(action, target) {  //this function evaluates and executes user input
+// The below function evaluates and executes user input. Different bits of code are exectued depending on what arguments are passed
+function checkTarget(action, target) {
     if (action === 'take') {
         let availableTarget = lookUpRooms[Player.location].inventory
         if (availableTarget.includes(target) && target != 'bottle') {
-            lookUpThings[target].take() // using lookuptable to access item
+            lookUpThings[target].take()
         } else if (availableTarget.includes(target) && target === 'bottle') {
             console.log(`You pick up the bottle and smash it on the rocks to get the map`)
             lookUpThings['map'].take()
@@ -308,8 +322,8 @@ function checkTarget(action, target) {  //this function evaluates and executes u
         } else if (target === 'sailboat') {
             move('sailboat')
             if (Player.inventory.includes('captain')) {
-                console.log('You fucking WIN!')
-                process.exit()
+                console.log("There is a FLASH if light!\nYou are now back on the street where you started.\nIn your right hand is the treasure map and a note.\nIn your left hand are 5 gold coins.\n\nThe note reads:\nThank you for releasing me from the Tiki-hex and returning me to my boat.\nHere is a token of my appreciation. \nWith Gratitude, Captain Gorton\n\n   Congratulations!  You solved the game!\n\n(Later this month you go on Antiques Roadshow and learn that the map and coins together are part of BlackBeard's missing treasure and are worth $1.5M!)")
+                gameWon = true
             }
         }
     } else if (action === 'list') {
@@ -326,9 +340,9 @@ function checkTarget(action, target) {  //this function evaluates and executes u
     }
 }
 
-
-// ******************* lookup table  **************************************************************
-let lookUpThings = {
+// Code below establishes our Lookup Tables
+/* ******************* Lookup Table  ************************************************************* */
+let lookUpThings = {     // lookUpThings will be used by various functions and methods
     'wallet': wallet,
     'bucket': fishBucket,
     'captain': seaCaptain,
@@ -342,7 +356,7 @@ let lookUpThings = {
     'rocks': rocks
 }
 
-let lookUpRooms = {
+let lookUpRooms = {      // lookUpRooms will be used by the State Machine that moves the Player from room to room
     'street': Street,
     'sailboat': Sailboat,
     'island': Island,
@@ -350,10 +364,10 @@ let lookUpRooms = {
     'cave': Cave
 }
 
+// Code below makes up our State Machine, which is used to move the Player from room to room
+/* ****************** State Machine ************************************************************* */
 
-// ******************* state machines **************************************************************
-
-let localState = {
+let localState = {    // this variable tells the State Machine what rooms can be accessed from where
     street: ['sailboat'],
     sailboat: ['street', 'cabin', 'island'],
     cabin: ['sailboat'],
@@ -370,16 +384,14 @@ function move(nextLocale) { // this function moves our Player from one room to a
     }
 }
 
-
-// *************** logic **************************************************************************
-
+// Code below establishes game logic. Player is prompted for input, which is santized and passed around the program
+/* ************** Logic ************************************************************************* */
 
 async function start() {
-    while (true) {
+    while (gameWon === false) {
         let firstQ = await ask('What would you like to do?\n>_') // ask opening question
 
-        let commandArray = sanitizeInput(firstQ)
-        //console.log(commandArray[0], commandArray[1])  /// remove this for production version
+        let commandArray = sanitizeInput(firstQ)   // input is santized
 
         if (commandArray[0] === 'take') {
             checkTarget(commandArray[0], commandArray[1])
@@ -415,9 +427,8 @@ async function start() {
     process.exit()
 }
 
-
-// ******************* flow ***************************************************************************
-
+// Code below initializes our game. We hope you enjoy!
+/* ****************** Flow ******************************************************************* */
 
 console.log(lookUpRooms[Player.location].description)
 commandList()
