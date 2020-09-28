@@ -15,4 +15,4 @@ function move(nextLocale) {
     }
 }
 
-c
+console.log
